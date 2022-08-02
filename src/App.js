@@ -20,8 +20,8 @@ const auth = getAuth(app);
 auth.useDeviceLanguage();
 let user;
 function App() {
-  user = useAuthState(auth);
-
+  [user] = useAuthState(auth);
+  console.log(user);
   return (
     <div className="App">
       <header className="App-header">
@@ -42,7 +42,6 @@ async function signIn() {
 
   try {
     const result = await signInWithPopup(auth, provider);
-    console.log(result);
   } catch (error) {
     console.error(error);
   }
@@ -54,11 +53,11 @@ async function logOut() {
 }
 
 async function sendMessage(message) {
-  const userName = trimUserName(user[0].displayName);
+  const userName = user.displayName;
 
   try {
     const docRef = await addDoc(collection(db, "messages"), {
-      first: userName.firstName,
+      name: userName,
       message: message,
     });
     console.log("Document written with ID: ", docRef.id);

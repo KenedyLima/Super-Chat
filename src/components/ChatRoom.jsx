@@ -25,6 +25,7 @@ function ChatRoom({ sendMessageHandler, handleSignOut }) {
           className="send-message-button"
           onClick={() => {
             sendMessageHandler(document.querySelector(".message-field").value);
+            document.querySelector(".message-field").value = "";
           }}
         >
           <ion-icon name="send"></ion-icon>
