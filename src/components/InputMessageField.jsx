@@ -10,14 +10,16 @@ function InputMessageField({ sendMessageHandler }) {
     const inputField = document.querySelector('.message-field');
     inputField.addEventListener("input", () => {message = document.querySelector('.message-field').value})
     inputField.addEventListener("keypress", (e) => {
-      if(e.key === "Enter") {
-        console.log('Message: ' + message)
+   
+      if(e.key === "Enter" && message !== "") {
+     
+        console.log('Enter Listener Message: ' + message)
         sendMessageHandler(message);
         inputField.value="";
       }
     })
     button.addEventListener("click", () => {
-      console.log('Message: ' + message)
+      console.log('Click Listener Message: ' + message)
       sendMessageHandler(message);
       inputField.value=""
     });

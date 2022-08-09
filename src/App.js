@@ -1,7 +1,7 @@
 import "./stylesheets/App.css";
 import React, { useState } from "react";
 
-import ChatRoom, { loadMessages } from "./components/ChatRoom";
+import ChatRoom, { loadMessages, updateMessages } from "./components/ChatRoom";
 import SignInButton from "./components/SignInButton";
 import {
   GoogleAuthProvider,
@@ -9,35 +9,44 @@ import {
   signOut
 } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, addDoc} from "firebase/firestore";
+import { collection, addDoc, doc} from "firebase/firestore";
 import {db, auth} from "./firebase.config";
-import { updateMessages } from "./components/ChatRoom";
 import {useEffect} from "react"
-import { getDocs } from "firebase/firestore";
+import { getDocs, onSnapshot } from "firebase/firestore";
 auth.useDeviceLanguage();
 let user;
 function App() {
   console.log('Rendering app');
   [user] = useAuthState(auth);
-  const[messages, setMessages] = useState([]);
+  const[docs, setDocs] = useState([]);
   
   useEffect(() => {
-    try{
 
-      const data = getDocs(collection(db, "messages")).then(data => setMessages(data.docs));
-    } catch(e) {
-      console.error(e);
-    }
-  });
-  
+      async function loadMessages() {
+        const data = await getDocs(collection(db, "messages"))
+        setDocs(data.docs);
+      }
+
+      loadMessages();
+      function updateMessages() {
+        onSnapshot(collection(db, "messages"), function(messagesRef) {
+          console.log("UPDATING>>>>>")
+          setDocs(messagesRef);
+        })
+      }
+      // updateMessages();
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
         <section>
-          {user ? (
+          {user ? docs && docs.length > 0 &&(
             <ChatRoom
               sendMessageHandler={sendMessage}
               handleSignOut={logOut}
+              docs={docs}
+              user={user}
             />
           ) : (
             <SignInButton clickHandler={signIn} />
@@ -68,7 +77,7 @@ async function logOut() {
 
 async function sendMessage(message) {
   const userName = user.displayName;
-
+  console.log("Adding doc........")
   try {
     const docRef = await addDoc(collection(db, "messages"), {
       name: userName,
