@@ -1,3 +1,6 @@
+import { initializeApp} from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyB7SPQChPwqgZbnkfjdqvUu59G_-5waV04",
   authDomain: "super-chat-4a393.firebaseapp.com",
@@ -8,4 +11,8 @@ const firebaseConfig = {
   measurementId: "G-2459RYJ4L2",
 };
 
-export default firebaseConfig;
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+

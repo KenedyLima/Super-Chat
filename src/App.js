@@ -1,41 +1,55 @@
 import "./stylesheets/App.css";
-import React from "react";
+import React, { useState } from "react";
 
-import ChatRoom from "./components/ChatRoom";
+import ChatRoom, { loadMessages } from "./components/ChatRoom";
 import SignInButton from "./components/SignInButton";
-import { initializeApp } from "firebase/app";
 import {
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
-  getAuth,
+  signOut
 } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import firebaseConfig from "./firebase.config";
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+import { collection, addDoc} from "firebase/firestore";
+import {db, auth} from "./firebase.config";
+import { updateMessages } from "./components/ChatRoom";
+import {useEffect} from "react"
+import { getDocs } from "firebase/firestore";
 auth.useDeviceLanguage();
 let user;
 function App() {
+  console.log('Rendering app');
   [user] = useAuthState(auth);
-  console.log(user);
+  const[messages, setMessages] = useState([]);
+  
+  useEffect(() => {
+    try{
+
+      const data = getDocs(collection(db, "messages")).then(data => setMessages(data.docs));
+    } catch(e) {
+      console.error(e);
+    }
+  });
+  
   return (
     <div className="App">
       <header className="App-header">
         <section>
           {user ? (
-            <ChatRoom sendMessageHandler={sendMessage} handleSignOut={logOut} />
+            <ChatRoom
+              sendMessageHandler={sendMessage}
+              handleSignOut={logOut}
+            />
           ) : (
             <SignInButton clickHandler={signIn} />
           )}
+          
         </section>
       </header>
     </div>
   );
+
 }
+
 
 async function signIn() {
   const provider = new GoogleAuthProvider();
@@ -59,6 +73,7 @@ async function sendMessage(message) {
     const docRef = await addDoc(collection(db, "messages"), {
       name: userName,
       message: message,
+      date: new Date(),
     });
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {
@@ -66,8 +81,6 @@ async function sendMessage(message) {
   }
 }
 
-function trimUserName(name) {
-  const nameSplit = name.split(" ");
-  return { firstName: nameSplit.slice(0) };
-}
+
+
 export default App;

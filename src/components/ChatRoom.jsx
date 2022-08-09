@@ -1,7 +1,13 @@
-import React from "react";
-import { send } from "ionicons/icons";
-
+import React, { useState } from "react";
+import InputMessageField from "./InputMessageField";
+import { getDocs, onSnapshot } from "firebase/firestore";
+import { collection } from "firebase/firestore";
+import {db} from "../firebase.config";
+import { useEffect } from "react";
+let docs = [];
 function ChatRoom({ sendMessageHandler, handleSignOut }) {
+  console.log("rendering chat");
+  console.log(docs);
   return (
     <div className="chat">
       <div className="chat-header">
@@ -13,27 +19,21 @@ function ChatRoom({ sendMessageHandler, handleSignOut }) {
         <h1 className="chat-name">Super Chat</h1>
         <button onClick={handleSignOut}>Sign Out</button>
       </div>
-      <div className="messages-container"></div>
-      <div className="send-message-field">
-        <input
-          placeholder="Send Message"
-          className="message-field"
-          type="text"
-        />
-        <button
-          type="submit"
-          className="send-message-button"
-          onClick={() => {
-            sendMessageHandler(document.querySelector(".message-field").value);
-            document.querySelector(".message-field").value = "";
-          }}
-        >
-          <ion-icon name="send"></ion-icon>
-        </button>
+      <div className="messages-container">
+   
       </div>
+      <InputMessageField sendMessageHandler={sendMessageHandler} />
     </div>
   );
 }
 
-function removePlaceholder() {}
+export function updateMessages(db) {
+  const unsub = onSnapshot(collection(db, "messages"), (messagesRef) => {
+    docs = messagesRef.docs;
+    console.log(docs)
+  })
+}
+
+
+
 export default ChatRoom;
