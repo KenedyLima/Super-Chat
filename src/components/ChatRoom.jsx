@@ -1,9 +1,5 @@
 import React, { useState } from "react";
 import InputMessageField from "./InputMessageField";
-import { getDocs, onSnapshot } from "firebase/firestore";
-import { collection } from "firebase/firestore";
-import {db} from "../firebase.config";
-import { useEffect } from "react";
 
 function ChatRoom({ sendMessageHandler, handleSignOut, docs, user }) {
   const userName = user.displayName;
@@ -36,29 +32,28 @@ function ChatRoom({ sendMessageHandler, handleSignOut, docs, user }) {
 
 function dateComparator(array) {
   const resultArray = [];
-  for(let i = 0; i < array.length; i++){
+ 
+  for(let i = 0; i <= array.length;i++){
     const currentElement = array[i];
-    for(let j = i; j < array.length; j++) {
-      let smallerElement;
-      let lastElementIndex;
-      if(lastElementIndex) {
-
-      }
-      if(array[i] <= array[j]){
-        resultArray[i] = array[i]
-        lastElementIndex = i;
-      } else {
-        resultArray[i] = array[j];
-        lastElementIndex = j;
-      }
-
-
-    }
+    let smallestNumber = currentElement;
+    let smallestNumberIndex = i;
+    for(let j = 0; j <= array.length;j++) {
+      const elementToCompare = array[j];
+        if(currentElement > elementToCompare) {smallestNumber = elementToCompare;
+        smallestNumberIndex = j;
+        };
+    
+    }    
+    array.splice(smallestNumberIndex);
+    console.log('smallestNumber', smallestNumber);
+    console.log('currentElement', currentElement)
+    resultArray[i] = smallestNumber;
   }
-console.log("resultArray: ", resultArray);
+  
+console.log("resultArray>>>>>>>>>", resultArray);
 }
 
-dateComparator([5, 4, 3, 2, 1]);
+dateComparator([4,3,8,7]);
 
 
 

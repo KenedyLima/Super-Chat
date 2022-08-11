@@ -1,7 +1,7 @@
 import "./stylesheets/App.css";
 import React, { useState } from "react";
 
-import ChatRoom, { loadMessages, updateMessages } from "./components/ChatRoom";
+import ChatRoom from "./components/ChatRoom";
 import SignInButton from "./components/SignInButton";
 import {
   GoogleAuthProvider,
