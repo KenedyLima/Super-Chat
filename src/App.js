@@ -18,34 +18,17 @@ let user;
 function App() {
   console.log('Rendering app');
   [user] = useAuthState(auth);
-  const[docs, setDocs] = useState([]);
-  
-  useEffect(() => {
-
-      async function loadMessages() {
-        const data = await getDocs(collection(db, "messages"))
-        setDocs(data.docs);
-      }
-
-      loadMessages();
-      function updateMessages() {
-        onSnapshot(collection(db, "messages"), function(messagesRef) {
-          console.log("UPDATING>>>>>")
-          setDocs(messagesRef);
-        })
-      }
-      // updateMessages();
-  }, []);
 
   return (
     <div className="App">
       <header className="App-header">
+
         <section>
-          {user ? docs && docs.length > 0 &&(
+          {user ? (
             <ChatRoom
               sendMessageHandler={sendMessage}
               handleSignOut={logOut}
-              docs={docs}
+        
               user={user}
             />
           ) : (
@@ -77,6 +60,7 @@ async function logOut() {
 
 async function sendMessage(message) {
   const userName = user.displayName;
+ 
   console.log("Adding doc........")
   try {
     const docRef = await addDoc(collection(db, "messages"), {
@@ -88,8 +72,15 @@ async function sendMessage(message) {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
+  updateMessageContainerScroll();
 }
 
+export function updateMessageContainerScroll() {
+  const messageContainer = document.querySelector('.messages-container');
+  console.log(messageContainer.scrollHeight)
+  messageContainer.scrollTop = messageContainer.scrollHeight;
+  console.log(messageContainer.scrollTop)
+}
 
 
 export default App;

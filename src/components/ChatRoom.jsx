@@ -1,11 +1,24 @@
 import React, { useState } from "react";
 import InputMessageField from "./InputMessageField";
+import { useEffect } from "react";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../firebase.config";
+import { updateMessageContainerScroll } from "../App";
 
-function ChatRoom({ sendMessageHandler, handleSignOut, docs, user }) {
+function ChatRoom({ sendMessageHandler, handleSignOut, user }) {
+
+
   const userName = user.displayName;
-  let setDocs;
-  [docs, setDocs] = useState(docs);
-  console.log(docs)
+  const [docs, setDocs] = useState([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "messages"), orderBy("date", "asc"))
+    const unsubscribe = onSnapshot(q, (ref) => {
+      setDocs(ref.docs);
+    })
+
+  }, [])
+  
   return (
     <div className="chat">
       <div className="chat-header">
@@ -29,33 +42,5 @@ function ChatRoom({ sendMessageHandler, handleSignOut, docs, user }) {
     </div>
   );
 }
-
-function dateComparator(array) {
-  const resultArray = [];
- 
-  for(let i = 0; i <= array.length;i++){
-    const currentElement = array[i];
-    let smallestNumber = currentElement;
-    let smallestNumberIndex = i;
-    for(let j = 0; j <= array.length;j++) {
-      const elementToCompare = array[j];
-        if(currentElement > elementToCompare) {smallestNumber = elementToCompare;
-        smallestNumberIndex = j;
-        };
-    
-    }    
-    array.splice(smallestNumberIndex);
-    console.log('smallestNumber', smallestNumber);
-    console.log('currentElement', currentElement)
-    resultArray[i] = smallestNumber;
-  }
-  
-console.log("resultArray>>>>>>>>>", resultArray);
-}
-
-dateComparator([4,3,8,7]);
-
-
-
 
 export default ChatRoom;

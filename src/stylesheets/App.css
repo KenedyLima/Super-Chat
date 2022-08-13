@@ -42,6 +42,7 @@ html {
   padding: 20px 40px;
   gap: 20px;
   overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 
