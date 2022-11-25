@@ -2,15 +2,13 @@ import "./stylesheets/App.css";
 import React from "react";
 import ChatRoom from "./components/ChatRoom";
 import SignInButton from "./components/SignInButton";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut
-} from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, addDoc} from "firebase/firestore";
-import {db, auth} from "./firebase.config";
+import { collection, addDoc } from "firebase/firestore";
+import { db, auth } from "./firebase.config";
 import { trimUserName, updateMessageContainerScroll } from "./helperFunctions";
+import { AppHeader } from "./components/AppHeader";
+import { Tabs } from "./components/Tabs";
 
 let user;
 function App() {
@@ -21,22 +19,23 @@ function App() {
       <header className="App-header">
         <section>
           {user ? (
-            <ChatRoom
+            /* <ChatRoom
               sendMessageHandler={sendMessage}
-              handleSignOut={logOut}    
+              handleSignOut={logOut}
               user={user}
-            />
+            />*/
+            <>
+              <AppHeader />
+              <Tabs />
+            </>
           ) : (
             <SignInButton clickHandler={signIn} />
           )}
-          
         </section>
       </header>
     </div>
   );
-
 }
-
 
 async function signIn() {
   const provider = new GoogleAuthProvider();
@@ -60,7 +59,7 @@ async function sendMessage(message) {
       message: message,
       date: new Date(),
     });
-    
+
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     console.error("Error adding document: ", e);
